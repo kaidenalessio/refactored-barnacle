@@ -11,7 +11,7 @@
 		}
 		body {
 			width: 1635px;
-			height: 100vh;
+			height: 969px;
 			position: fixed;
 			overflow: hidden;
 		}
@@ -388,10 +388,66 @@ const Draw = {
 	},
 	resetShadow() {
 		this.setShadow(0, 0);
+	},
+	arrow(...args) {
+		if (args.length % 2 !== 0) args.pop();
+		if (args.length < 4) return;
+
+		this.ctx.save();
+		this.ctx.lineCap = 'round';
+		this.ctx.lineWidth = 4;
+		this.setShadow(-2, 2, 10, 'rgba(0, 0, 0, 0.4)');
+
+		// retrieve points
+		const p = [];
+		for (let i = 0; i < args.length; i += 2) {
+			p.push({
+				x: args[i],
+				y: args[i+1]
+			});
+		}
+
+		// draw the line
+		this.ctx.beginPath();
+		this.ctx.moveTo(p[0].x, p[0].y);
+		for (let i = 1; i < p.length; i++) {
+			this.ctx.lineTo(p[i].x, p[i].y);
+		}
+
+		// draw the head/pointer
+		const headLength = 14;
+		const lastPoint = p[p.length - 1];
+		const last2ndPoint = p[p.length - 2];
+		const direction = Math.angleBetween(lastPoint.x, lastPoint.y, last2ndPoint.x, last2ndPoint.y);
+		const polar1 = Math.polar(lastPoint.x, lastPoint.y, headLength, direction + Math.PI / 5);
+		const polar2 = Math.polar(lastPoint.x, lastPoint.y, headLength, direction - Math.PI / 5);
+
+		this.ctx.moveTo(polar1.x, polar1.y);
+		this.ctx.lineTo(lastPoint.x, lastPoint.y);
+		this.ctx.lineTo(polar2.x, polar2.y);
+		this.ctx.stroke();
+
+		this.ctx.restore();
 	}
 };
 
+Math.angleBetween = (x1, y1, x2, y2) => Math.atan2(y2 - y1, x2 - x1);
+Math.polar = (x, y, radius, angle) => {
+	x += Math.cos(angle) * radius;
+	y += Math.sin(angle) * radius;
+	return { x, y };
+};
+
 Draw.addImage('ref', document.getElementById('refImage'));
+
+const makeColorStop = (myGradient, color) => {
+	const c = C.HEXToRGBComponent(color);
+	myGradient.addColorStop(0, C.makeRGB(c.r + 50, c.g + 50, c.b + 50));
+	myGradient.addColorStop(0.1, color);
+	myGradient.addColorStop(0.6, color);
+	myGradient.addColorStop(0.9, C.makeRGB(c.r * 0.8, c.g * 0.8, c.b * 0.8));
+	myGradient.addColorStop(1, C.makeRGB(c.r * 0.76, c.g * 0.76, c.b * 0.76));
+};
 
 const drawTextBox = (xCenter, yCenter, text, boxColor, marginX=Draw.currentFont.size * 2, textColor=C.white) => {
 
@@ -407,15 +463,10 @@ const drawTextBox = (xCenter, yCenter, text, boxColor, marginX=Draw.currentFont.
 
 	Draw.setShadow(-1, 37, 60, 'rgba(0, 0, 0, 0.3)');
 
-	const my_gradient = Draw.ctx.createLinearGradient(xCenter, y, xCenter, y + h);
-	const c = C.HEXToRGBComponent(boxColor);
-	my_gradient.addColorStop(0, C.makeRGB(c.r + 50, c.g + 50, c.b + 50));
-	my_gradient.addColorStop(0.1, boxColor);
-	my_gradient.addColorStop(0.6, boxColor);
-	my_gradient.addColorStop(0.9, C.makeRGB(c.r * 0.8, c.g * 0.8, c.b * 0.8));
-	my_gradient.addColorStop(1, C.makeRGB(c.r * 0.76, c.g * 0.76, c.b * 0.76));
+	const myGradient = Draw.ctx.createLinearGradient(xCenter, y, xCenter, y + h);
+	makeColorStop(myGradient, boxColor);
 
-	Draw.setColor(my_gradient);
+	Draw.setColor(myGradient);
 	Draw.rect(x, y, w, h);
 
 	Draw.setShadow(0, 4, 10, 'rgba(0, 0, 0, 0.4)');
@@ -440,15 +491,10 @@ const drawColorBox = (xCenter, yCenter, color, w=32, h=32) => {
 
 	Draw.setShadow(-1, 37, 60, 'rgba(0, 0, 0, 0.3)');
 
-	const my_gradient = Draw.ctx.createLinearGradient(xCenter, y, xCenter, y + h);
-	const c = C.HEXToRGBComponent(color);
-	my_gradient.addColorStop(0, C.makeRGB(c.r + 50, c.g + 50, c.b + 50));
-	my_gradient.addColorStop(0.1, color);
-	my_gradient.addColorStop(0.6, color);
-	my_gradient.addColorStop(0.9, C.makeRGB(c.r * 0.8, c.g * 0.8, c.b * 0.8));
-	my_gradient.addColorStop(1, C.makeRGB(c.r * 0.76, c.g * 0.76, c.b * 0.76));
+	const myGradient = Draw.ctx.createLinearGradient(xCenter, y, xCenter, y + h);
+	makeColorStop(myGradient, color);
 
-	Draw.setColor(my_gradient);
+	Draw.setColor(myGradient);
 	Draw.rect(x, y, w, h);
 
 	Draw.resetShadow();
@@ -464,49 +510,56 @@ const BOX = {
 
 const drawStuff = () => {
 	Draw.clear();
+	drawRef();
+	drawMainArrows();
+	drawSideArrows();
+	drawFlowChart();
 
-	Draw.image('ref', Stage.mid.w, Stage.mid.h+4, 1.6, 1.7);
+};
 
+const drawMainArrows = () => {
+	const x = 146;
+	const y = 350;
+	Draw.setColor(C.black);
+	Draw.arrow(x, y, x + 120, y);
+	Draw.arrow(x + 212, y, x + 342, y);
+	Draw.arrow(x + 424, y, x + 555, y);
+	Draw.arrow(x + 637, y, x + 742, y);
+	Draw.arrow(x + 856, y, x + 993, y);
+	Draw.arrow(x + 1100, y, x + 1234, y);
+	Draw.arrow(x + 1315, y, x + 1416, y, x + 1416, y + 394, x + 1374, y + 394);
+	Draw.arrow(x + 1270, y + 394, x + 1102, y + 394);
+};
 
-	Draw.setHVAlign('center', 'middle');
-	// Draw.ctx.lineWidth = 2;
-	Draw.setFont(Font.mb);
+const drawSideArrows = () => {
+	const x = 146;
+	const y = 164;
+	Draw.setColor(C.slateBlue);
+	Draw.arrow(x, y, x, y + 134);
+	Draw.arrow(x, y + 379, x, y + 240);
+};
 
-	// debug
-	Draw.setColor(C.white);
-	Draw.rect(0, Stage.h - 350, Stage.mid.w - 400, Stage.mid.h);
-	// end debug
-
+const drawFlowChart = () => {
 	const color1 = C.darkOrange;
 	const color2 = C.royalBlue;
 	const color3 = C.rebeccaPurple;
 	const color4 = C.green;
+	const x = 146;
+	const y = 164;
 
-
-	let x = 146;
-	let y = 164;
+	Draw.setHVAlign('center', 'middle');
+	Draw.setFont(Font.mb);
 
 	// --- PHASE 1 ---
-
 	drawTextBox(x, y, 'OWNER', color1);
-
 	drawTextBox(x, y + 186, 'STRATEGIC\nPLAN', color1);
-
 	drawTextBox(x, y + 379, 'INVESTOR', color1);
-
 	drawTextBox(x + 212, y + 186, 'FEASIBILITY\nSTUDY', color1);
-
 	drawTextBox(x + 424, y + 186, 'MASTER\nPLAN', color1);
-
 	drawTextBox(x + 290, y, 'ENVIRONMENT', color1);
-
 	drawTextBox(x + 290, y + 379, 'LEGAL', color1);
-
 	// drawTextBox(x + 537, y + 471, 'STANDARD\nEQUIPMENT', color1);
 	drawTextBox(x + 537, y + 473, 'STANDARD\nEQUIPMENT', color1);
-
-
-
 
 	// --- PHASE 3 ---
 	drawTextBox(x + 637, y + 186, 'DETAIL\nDESIGN', color2);
@@ -514,40 +567,38 @@ const drawStuff = () => {
 	drawTextBox(x + 745, y + 379, 'MEDICAL\nEQUIPMENT', color2);
 	drawTextBox(x + 976, y + 379, 'PROCUREMENT\nOF EQUIPMENT', color2);
 
-
-
-
 	// --- PHASE 3 ---
-
 	// PART 1
-
 	drawTextBox(x + 718, y, 'BUSINESS\nPLAN', color3);
 	drawTextBox(x + 955, y, 'HUMAN\nRESOURCES', color3);
 	drawTextBox(x + 1207, y, 'OPERATIONAL\nCOST', color3);
-
 	// PART 2
-
 	drawTextBox(x + 1100, y + 186, 'OPERATIONAL\nMANAGEMENT\nSYSTEM', color4);
-	drawTextBox(x + 1300, y + 186, 'START UP', color4);
+	drawTextBox(x + 1315, y + 186, 'START UP', color4);
 	drawTextBox(x + 1207, y + 379, 'LEGAL', color4, 70);
-	drawTextBox(x + 1300, y + 580, 'FULL\nOPERATIONAL', color4);
-	drawTextBox(x + 1040, y + 580, 'SUSTAINABLE\nOPERATION', color4);
+	drawTextBox(x + 1270, y + 580, 'FULL\nOPERATIONAL', color4);
+	drawTextBox(x + 1000, y + 580, 'SUSTAINABLE\nOPERATION', color4);
 
-
+	// --- INFO ---
 	drawColorBox(40, Stage.h - 120, color1);
 	drawColorBox(40, Stage.h - 80, color2);
 	drawColorBox(40, Stage.h - 40, color3);
 	drawColorBox(80, Stage.h - 40, color4);
-
 	Draw.setHVAlign('left', 'middle');
 	Draw.text(60, Stage.h - 120, ': PHASE 1');
 	Draw.text(60, Stage.h - 80, ': PHASE 2');
 	Draw.text(100, Stage.h - 40, ': PHASE 3');
+};
 
-
-
-
-
+const drawRef = () => {
+	Draw.setAlpha(0.5);
+	Draw.image('ref', Stage.mid.w, Stage.mid.h+4, 1.6, 1.7);
+	Draw.setAlpha(1);
+	
+	// debug
+	Draw.setColor(C.white);
+	Draw.rect(0, Stage.h - 350, Stage.mid.w - 400, Stage.mid.h);
+	// end debug
 };
 
 
@@ -576,11 +627,13 @@ const Stage = {
 
 Stage.init();
 
-
+let runCount = 5;
 
 const run = () => {
 	drawStuff();
-	window.requestAnimationFrame(run);
+	if (runCount-- > 0) {
+		window.requestAnimationFrame(run);
+	}
 };
 
 window.onload = () => {
