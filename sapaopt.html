@@ -393,10 +393,9 @@ const Draw = {
 
 Draw.addImage('ref', document.getElementById('refImage'));
 
-const drawTextBox = (xCenter, yCenter, text, boxColor, textColor=C.white) => {
+const drawTextBox = (xCenter, yCenter, text, boxColor, marginX=Draw.currentFont.size * 2, textColor=C.white) => {
 
-	const marginX = Draw.currentFont.size * 2;
-	const marginY = marginX / 2;
+	const marginY = Draw.currentFont.size;
 
 	const w = Math.max(BOX.W, Draw.getTextWidth(text)) + marginX;
 	const h = Math.max(BOX.H, Draw.getTextHeight(text)) + marginY;
@@ -432,6 +431,32 @@ const drawTextBox = (xCenter, yCenter, text, boxColor, textColor=C.white) => {
 
 };
 
+const drawColorBox = (xCenter, yCenter, color, w=32, h=32) => {
+	const x = xCenter - w / 2;
+	const y = yCenter - h / 2;
+
+	Draw.setColor(C.black);
+	Draw.rect(x + 0.5, y + 2, w - 1, h - 1);
+
+	Draw.setShadow(-1, 37, 60, 'rgba(0, 0, 0, 0.3)');
+
+	const my_gradient = Draw.ctx.createLinearGradient(xCenter, y, xCenter, y + h);
+	const c = C.HEXToRGBComponent(color);
+	my_gradient.addColorStop(0, C.makeRGB(c.r + 50, c.g + 50, c.b + 50));
+	my_gradient.addColorStop(0.1, color);
+	my_gradient.addColorStop(0.6, color);
+	my_gradient.addColorStop(0.9, C.makeRGB(c.r * 0.8, c.g * 0.8, c.b * 0.8));
+	my_gradient.addColorStop(1, C.makeRGB(c.r * 0.76, c.g * 0.76, c.b * 0.76));
+
+	Draw.setColor(my_gradient);
+	Draw.rect(x, y, w, h);
+
+	Draw.resetShadow();
+
+	Draw.setColor(C.black);
+	Draw.rect(x, y, w, h, true);
+};
+
 const BOX = {
 	W: 105,
 	H: 70
@@ -440,12 +465,17 @@ const BOX = {
 const drawStuff = () => {
 	Draw.clear();
 
-	// Draw.image('ref', Stage.mid.w, Stage.mid.h, 1.6, 1.7);
+	Draw.image('ref', Stage.mid.w, Stage.mid.h+4, 1.6, 1.7);
 
 
 	Draw.setHVAlign('center', 'middle');
 	// Draw.ctx.lineWidth = 2;
 	Draw.setFont(Font.mb);
+
+	// debug
+	Draw.setColor(C.white);
+	Draw.rect(0, Stage.h - 350, Stage.mid.w - 400, Stage.mid.h);
+	// end debug
 
 	const color1 = C.darkOrange;
 	const color2 = C.royalBlue;
@@ -472,7 +502,8 @@ const drawStuff = () => {
 
 	drawTextBox(x + 290, y + 379, 'LEGAL', color1);
 
-	drawTextBox(x + 537, y + 471, 'STANDARD\nEQUIPMENT', color1);
+	// drawTextBox(x + 537, y + 471, 'STANDARD\nEQUIPMENT', color1);
+	drawTextBox(x + 537, y + 473, 'STANDARD\nEQUIPMENT', color1);
 
 
 
@@ -498,11 +529,20 @@ const drawStuff = () => {
 
 	drawTextBox(x + 1100, y + 186, 'OPERATIONAL\nMANAGEMENT\nSYSTEM', color4);
 	drawTextBox(x + 1300, y + 186, 'START UP', color4);
-	drawTextBox(x + 1207, y + 379, 'LEGAL', color4);
+	drawTextBox(x + 1207, y + 379, 'LEGAL', color4, 70);
 	drawTextBox(x + 1300, y + 580, 'FULL\nOPERATIONAL', color4);
 	drawTextBox(x + 1040, y + 580, 'SUSTAINABLE\nOPERATION', color4);
 
 
+	drawColorBox(40, Stage.h - 120, color1);
+	drawColorBox(40, Stage.h - 80, color2);
+	drawColorBox(40, Stage.h - 40, color3);
+	drawColorBox(80, Stage.h - 40, color4);
+
+	Draw.setHVAlign('left', 'middle');
+	Draw.text(60, Stage.h - 120, ': PHASE 1');
+	Draw.text(60, Stage.h - 80, ': PHASE 2');
+	Draw.text(100, Stage.h - 40, ': PHASE 3');
 
 
 
@@ -546,44 +586,6 @@ const run = () => {
 window.onload = () => {
 	run();
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 </script>
 </body>
