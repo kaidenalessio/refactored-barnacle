@@ -489,7 +489,7 @@ const drawColorBox = (xCenter, yCenter, color, w=32, h=32) => {
 	Draw.setColor(C.black);
 	Draw.rect(x + 0.5, y + 2, w - 1, h - 1);
 
-	Draw.setShadow(-1, 37, 60, 'rgba(0, 0, 0, 0.3)');
+	Draw.setShadow(-1, 20, 30, 'rgba(0, 0, 0, 0.3)');
 
 	const myGradient = Draw.ctx.createLinearGradient(xCenter, y, xCenter, y + h);
 	makeColorStop(myGradient, color);
@@ -510,11 +510,10 @@ const BOX = {
 
 const drawStuff = () => {
 	Draw.clear();
-	drawRef();
+	// drawRef();
 	drawMainArrows();
 	drawSideArrows();
 	drawFlowChart();
-
 };
 
 const drawMainArrows = () => {
@@ -532,10 +531,41 @@ const drawMainArrows = () => {
 };
 
 const drawSideArrows = () => {
-	const x = 146;
-	const y = 164;
+	let x = 146;
+	let y = 164;
 	Draw.setColor(C.slateBlue);
 	Draw.arrow(x, y, x, y + 134);
+	Draw.arrow(x, y + 379, x, y + 240);
+	x += 164;
+	Draw.arrow(x, y + 186, x, y, x + 45, y);
+	Draw.arrow(x, y + 186, x, y + 388, x + 45, y + 388);
+	Draw.arrow(x + 234, y, x + 234, y + 134);
+	Draw.arrow(x + 110, y + 388, x + 234, y + 388, x + 234, y + 240);
+	x += 310;
+	Draw.arrow(x, y + 155, x + 115, y, x + 159, y);
+	Draw.arrow(x, y + 186, x, y + 420);
+	x += 118;
+	Draw.arrow(x, y + 473, x, y + 240);
+	x += 92;
+	Draw.arrow(x, y + 186, x, y + 327);
+	x += 92;
+	Draw.arrow(x, y, x + 35, y, x + 35, y + 134);
+	x += 25;
+	Draw.arrow(x, y + 379, x, y + 240);
+	x += 35;
+	Draw.arrow(x, y + 186, x, y, x + 25, y);
+	x += 75;
+	Draw.arrow(x, y + 186, x, y + 327);
+	x += 108;
+	Draw.arrow(x, y, x + 35, y, x + 35, y + 134);
+	x += 12;
+	Draw.arrow(x, y + 379, x, y + 240);
+	x += 48;
+	Draw.arrow(x, y + 186, x, y, x + 25, y);
+	x += 72;
+	Draw.arrow(x, y + 186, x, y + 327);
+	x += 118;
+	Draw.arrow(x, y, x + 67, y, x + 67, y + 134);
 	Draw.arrow(x, y + 379, x, y + 240);
 };
 
@@ -556,7 +586,7 @@ const drawFlowChart = () => {
 	drawTextBox(x, y + 379, 'INVESTOR', color1);
 	drawTextBox(x + 212, y + 186, 'FEASIBILITY\nSTUDY', color1);
 	drawTextBox(x + 424, y + 186, 'MASTER\nPLAN', color1);
-	drawTextBox(x + 290, y, 'ENVIRONMENT', color1);
+	drawTextBox(x + 318, y, 'ENVIRONMENT', color1);
 	drawTextBox(x + 290, y + 379, 'LEGAL', color1);
 	// drawTextBox(x + 537, y + 471, 'STANDARD\nEQUIPMENT', color1);
 	drawTextBox(x + 537, y + 473, 'STANDARD\nEQUIPMENT', color1);
