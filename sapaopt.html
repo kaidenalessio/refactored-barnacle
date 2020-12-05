@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Work+Sans&display=swap" rel="stylesheet">
+	<style type="text/css">
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		body {
+			width: 1635px;
+			height: 100vh;
+			position: fixed;
+			overflow: hidden;
+		}
+		#gameCanvas {
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+</head>
+<body>
+<img id="refImage" src="ref.png" style="display: none;">
+<canvas id="gameCanvas"></canvas>
+<script type="text/javascript">
+
+const C = {
+	aliceBlue: '#f0f8ff',
+	antiqueWhite: '#faebd7',
+	aqua: '#00ffff',
+	aquamarine: '#7fffd4',
+	azure: '#f0ffff',
+	beige: '#f5f5dc',
+	bisque: '#ffe4c4',
+	black: '#000000',
+	blanchedAlmond: '#ffebcd',
+	blue: '#0000ff',
+	blueViolet: '#8a2be2',
+	brown: '#a52a2a',
+	burlyWood: '#deb887',
+	cadetBlue: '#5f9ea0',
+	chartreuse: '#7fff00',
+	chocolate: '#d2691e',
+	coral: '#ff7f50',
+	cornflowerBlue: '#6495ed',
+	cornsilk: '#fff8dc',
+	crimson: '#dc143c',
+	cyan: '#00ffff',
+	darkBlue: '#00008b',
+	darkCyan: '#008b8b',
+	darkGoldenRod: '#b8860b',
+	darkGray: '#a9a9a9',
+	darkGrey: '#a9a9a9',
+	darkGreen: '#006400',
+	darkKhaki: '#bdb76b',
+	darkMagenta: '#8b008b',
+	darkOliveGreen: '#556b2f',
+	darkOrange: '#ff8c00',
+	darkOrchid: '#9932cc',
+	darkRed: '#8b0000',
+	darkSalmon: '#e9967a',
+	darkSeaGreen: '#8fbc8f',
+	darkSlateBlue: '#483d8b',
+	darkSlateGray: '#2f4f4f',
+	darkSlateGrey: '#2f4f4f',
+	darkTurquoise: '#00ced1',
+	darkViolet: '#9400d3',
+	deepPink: '#ff1493',
+	deepSkyBlue: '#00bfff',
+	dimGray: '#696969',
+	dimGrey: '#696969',
+	dodgerBlue: '#1e90ff',
+	fireBrick: '#b22222',
+	floralWhite: '#fffaf0',
+	forestGreen: '#228b22',
+	fuchsia: '#ff00ff',
+	gainsboro: '#dcdcdc',
+	ghostWhite: '#f8f8ff',
+	gold: '#ffd700',
+	goldenRod: '#daa520',
+	gray: '#808080',
+	grey: '#808080',
+	green: '#008000',
+	greenYellow: '#adff2f',
+	honeyDew: '#f0fff0',
+	hotPink: '#ff69b4',
+	indianRed: '#cd5c5c',
+	indigo: '#4b0082',
+	ivory: '#fffff0',
+	khaki: '#f0e68c',
+	lavender: '#e6e6fa',
+	lavenderBlush: '#fff0f5',
+	lawnGreen: '#7cfc00',
+	lemonChiffon: '#fffacd',
+	lightBlue: '#add8e6',
+	lightCoral: '#f08080',
+	lightCyan: '#e0ffff',
+	lightGoldenRodYellow: '#fafad2',
+	lightGray: '#d3d3d3',
+	lightGrey: '#d3d3d3',
+	lightGreen: '#90ee90',
+	lightPink: '#ffb6c1',
+	lightSalmon: '#ffa07a',
+	lightSeaGreen: '#20b2aa',
+	lightSkyBlue: '#87cefa',
+	lightSlateGray: '#778899',
+	lightSlateGrey: '#778899',
+	lightSteelBlue: '#b0c4de',
+	lightYellow: '#ffffe0',
+	lime: '#00ff00',
+	limeGreen: '#32cd32',
+	linen: '#faf0e6',
+	magenta: '#ff00ff',
+	maroon: '#800000',
+	mediumAquaMarine: '#66cdaa',
+	mediumBlue: '#0000cd',
+	mediumOrchid: '#ba55d3',
+	mediumPurple: '#9370db',
+	mediumSeaGreen: '#3cb371',
+	mediumSlateBlue: '#7b68ee',
+	mediumSpringGreen: '#00fa9a',
+	mediumTurquoise: '#48d1cc',
+	mediumVioletRed: '#c71585',
+	midnightBlue: '#191970',
+	mintCream: '#f5fffa',
+	mistyRose: '#ffe4e1',
+	moccasin: '#ffe4b5',
+	navajoWhite: '#ffdead',
+	navy: '#000080',
+	oldLace: '#fdf5e6',
+	olive: '#808000',
+	oliveDrab: '#6b8e23',
+	orange: '#ffa500',
+	orangeRed: '#ff4500',
+	orchid: '#da70d6',
+	paleGoldenRod: '#eee8aa',
+	paleGreen: '#98fb98',
+	paleTurquoise: '#afeeee',
+	paleVioletRed: '#db7093',
+	papayaWhip: '#ffefd5',
+	peachPuff: '#ffdab9',
+	peru: '#cd853f',
+	pink: '#ffc0cb',
+	plum: '#dda0dd',
+	powderBlue: '#b0e0e6',
+	purple: '#800080',
+	rebeccaPurple: '#663399',
+	red: '#ff0000',
+	rosyBrown: '#bc8f8f',
+	royalBlue: '#4169e1',
+	saddleBrown: '#8b4513',
+	salmon: '#fa8072',
+	sandyBrown: '#f4a460',
+	seaGreen: '#2e8b57',
+	seaShell: '#fff5ee',
+	sienna: '#a0522d',
+	silver: '#c0c0c0',
+	skyBlue: '#87ceeb',
+	slateBlue: '#6a5acd',
+	slateGray: '#708090',
+	slateGrey: '#708090',
+	snow: '#fffafa',
+	springGreen: '#00ff7f',
+	steelBlue: '#4682b4',
+	tan: '#d2b48c',
+	teal: '#008080',
+	thistle: '#d8bfd8',
+	tomato: '#ff6347',
+	turquoise: '#40e0d0',
+	violet: '#ee82ee',
+	wheat: '#f5deb3',
+	white: '#ffffff',
+	whiteSmoke: '#f5f5f5',
+	yellow: '#ffff00',
+	yellowGreen: '#9acd32',
+	none: '#0000',
+	keys: [],
+	list: [],
+	random() {
+		return this.list[Math.floor(Math.random() * this.list.length)];
+	},
+	makeRGB(r, g, b) {
+		if (g === undefined) g = r;
+		if (b === undefined) b = r;
+		return `rgb(${r}, ${g}, ${b})`;
+	},
+	makeRGBA(r, g, b, a) {
+		if (arguments.length === 2) {
+			a = g;
+			g = r;
+		}
+		if (g === undefined) g = r;
+		if (b === undefined) b = r;
+		if (a === undefined) a = 1;
+		return `rgba(${r}, ${g}, ${b}, ${a})`;
+	},
+	componentToHEX(c) {
+		const hex = Math.ceil(c).toString(16);
+		return hex.length < 2? `0${hex}` : hex;
+	},
+	RGBToRGBComponent(rgb) {
+		rgb = rgb.replace('rgb(', '').replace(')', '').split(',').map(x => +x);
+		return {
+			r: rgb[0],
+			g: rgb[1],
+			b: rgb[2]
+		};
+	},
+	HEXToRGBComponent(hex) {
+		// https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+		hex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i, (m, r, g, b) => r+r+g+g+b+b));
+		if (!(hex instanceof Array)) {
+			hex = [0, 0, 0, 0];
+		}
+		return {
+			r: parseInt(hex[1], 16) || 0,
+			g: parseInt(hex[2], 16) || 0,
+			b: parseInt(hex[3], 16) || 0
+		};
+	},
+	RGBComponentToRGB(c, weight=1) {
+		return `rgb(${c.r * weight}, ${c.g * weight}, ${c.b * weight})`;
+	},
+	RGBComponentToHEX(c, weight=1) {
+		return `#${this.componentToHEX(c.r * weight)}${this.componentToHEX(c.g * weight)}${this.componentToHEX(c.b * weight)}`;
+	},
+	RGBToHEX(rgb, weight=1) {
+		return this.RGBComponentToHEX(this.RGBToRGBComponent(rgb), weight);
+	},
+	HEXToRGB(hex, weight=1) {
+		return this.RGBComponentToRGB(this.HEXToRGBComponent(hex), weight);
+	},
+	/**
+	 * @param {string} c 'rgb(r, g, b)' and '#rrggbb' or '#rgb'.
+	 */
+	multiply(c, weight=1) {
+		if (c.includes('rgb')) {
+			return this.RGBComponentToRGB(this.RGBToRGBComponent(c), weight);
+		}
+		if (c.includes('#')) {
+			return this.RGBComponentToHEX(this.HEXToRGBComponent(c), weight);
+		}
+		throw new TypeError(`The provided value 'c' must be in CSS rgb([r], [g], [b]) or hex #[r][g][b] format.`);
+	}
+};
+
+C.keys = Object.keys(C);
+C.keys.splice(C.keys.length - 14);
+C.list = Object.values(C);
+C.list.splice(C.list.length - 14);
+
+const Font = {
+	bold: 'bold ',
+	generate(name, size, style='', family='Work Sans, sans-serif') {
+		this[name] = { size, style, family };
+	},
+	init() {
+		this.generate('xxl', 64);
+		this.generate('xl',  48);
+		this.generate('l',   30);
+		this.generate('ml',  24);
+		this.generate('m',   22);
+		this.generate('sm',  16);
+		this.generate('s',   10);
+		this.generate('xxlb', 64, this.bold);
+		this.generate('xlb',  48, this.bold);
+		this.generate('lb',   30, this.bold);
+		this.generate('mlb',  24, this.bold);
+		this.generate('mb',   22, this.bold);
+		this.generate('smb',  16, this.bold);
+		this.generate('sb',   10, this.bold);
+	}
+};
+
+Font.init();
+
+const Draw = {
+	ctx: null,
+	images: {},
+	defaultCtx: null,
+	currentFont: Font.m,
+	init(ctx) {
+		this.ctx = this.defaultCtx = ctx;
+	},
+	setAlpha(n) {
+		this.ctx.globalAlpha = n;
+	},
+	setColor(c) {
+		this.ctx.strokeStyle = this.ctx.fillStyle = c;
+	},
+	rect(x, y, w, h, isStroke) {
+		// isStroke? this.ctx.strokeRect(x, y, w, h) : this.ctx.fillRect(x, y, w, h);
+		this.roundRect(x, y, w, h, 10, isStroke);
+	},
+	roundRect(x, y, w, h, r=10, isStroke=false) {
+		if (w < 0) { x += w; w = -w; }
+		if (h < 0) { y += h; h = -h; }
+		r = Math.min(Math.min(w * 0.5, h * 0.5), Math.max(0, r)) || 0;
+		this.ctx.beginPath();
+		this.ctx.moveTo(x, y + r);
+		this.ctx.quadraticCurveTo(x, y, x + r, y);
+		this.ctx.lineTo(x + w - r, y);
+		this.ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+		this.ctx.lineTo(x + w, y + h - r);
+		this.ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+		this.ctx.lineTo(x + r, y + h);
+		this.ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+		this.ctx.closePath();
+		isStroke? this.ctx.stroke() : this.ctx.fill();
+	},
+	circle(x, y, r, isStroke) {
+		this.ctx.beginPath();
+		this.ctx.arc(x, y, r, 0, 2 * Math.PI);
+		isStroke? this.ctx.stroke() : this.ctx.fill();
+	},
+	setFont(font) {
+		this.ctx.font = `${font.style}${font.size}px ${font.family}, serif`;
+		this.currentFont = font;
+	},
+	setHAlign(align) {
+		this.ctx.textAlign = align;
+	},
+	setVAlign(align) {
+		this.ctx.textBaseline = align;
+	},
+	setHVAlign(halign, valign) {
+		this.ctx.textAlign = halign;
+		this.ctx.textBaseline = valign;
+	},
+	splitText(text) {
+		return ('' + text).split('\n');
+	},
+	text(x, y, text) {
+		let baseline = 0;
+		const t = this.splitText(text);
+		switch (this.ctx.textBaseline) {
+			case 'bottom': baseline = -this.currentFont.size * (t.length - 1); break;
+			case 'middle': baseline = -this.currentFont.size * (t.length - 1) * 0.5; break;
+		}
+		for (let i = t.length - 1; i >= 0; --i) {
+			this.ctx.fillText(t[i], x, y + baseline + this.currentFont.size * i);
+		}
+	},
+	getTextWidth(text) {
+		return Math.max(...this.splitText(text).map(x => this.ctx.measureText(x).width));
+	},
+	getTextHeight(text) {
+		return this.currentFont.size * this.splitText(text).length;
+	},
+	addImage(name, img) {
+		this.images[name] = img;
+	},
+	getImage(name) {
+		return this.images[name];
+	},
+	image(name, x, y, xscale=1, yscale=1, angle=0, originX=0.5, originY=0.5) {
+		if (!(name instanceof Image || name instanceof HTMLCanvasElement)) {
+			name = this.images[name];
+		}
+		originX *= -name.width;
+		originY *= -name.height;
+		this.ctx.save();
+		this.ctx.translate(x, y);
+		this.ctx.rotate(angle);
+		this.ctx.scale(xscale, yscale);
+		this.ctx.drawImage(name, originX, originY);
+		this.ctx.restore();
+	},
+	createCanvas(w, h, drawFn) {
+		const canvas = document.createElement('canvas');
+		canvas.width = w;
+		canvas.height = h;
+		this.ctx = canvas.getContext('2d');
+		drawFn(w, h);
+		this.ctx = this.defaultCtx;
+		return canvas;
+	},
+	clear() {
+		this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+	},
+	setShadow(xOffset, yOffset, blur=0, color='#000000') {
+		this.ctx.shadowBlur = blur;
+		this.ctx.shadowColor = color;
+		this.ctx.shadowOffsetX = xOffset;
+		this.ctx.shadowOffsetY = yOffset;
+	},
+	resetShadow() {
+		this.setShadow(0, 0);
+	}
+};
+
+Draw.addImage('ref', document.getElementById('refImage'));
+
+const drawTextBox = (xCenter, yCenter, text, boxColor, textColor=C.white) => {
+
+	const marginX = Draw.currentFont.size * 2;
+	const marginY = marginX / 2;
+
+	const w = Math.max(BOX.W, Draw.getTextWidth(text)) + marginX;
+	const h = Math.max(BOX.H, Draw.getTextHeight(text)) + marginY;
+	const x = xCenter - w / 2;
+	const y = yCenter - h / 2;
+
+	Draw.setColor(C.black);
+	Draw.rect(x + 0.5, y + 3, w - 1, h - 1);
+
+	Draw.setShadow(-1, 37, 60, 'rgba(0, 0, 0, 0.3)');
+
+	const my_gradient = Draw.ctx.createLinearGradient(xCenter, y, xCenter, y + h);
+	const c = C.HEXToRGBComponent(boxColor);
+	my_gradient.addColorStop(0, C.makeRGB(c.r + 50, c.g + 50, c.b + 50));
+	my_gradient.addColorStop(0.1, boxColor);
+	my_gradient.addColorStop(0.6, boxColor);
+	my_gradient.addColorStop(0.9, C.makeRGB(c.r * 0.8, c.g * 0.8, c.b * 0.8));
+	my_gradient.addColorStop(1, C.makeRGB(c.r * 0.76, c.g * 0.76, c.b * 0.76));
+
+	Draw.setColor(my_gradient);
+	Draw.rect(x, y, w, h);
+
+	Draw.setShadow(0, 4, 10, 'rgba(0, 0, 0, 0.4)');
+
+	Draw.setColor(textColor);
+	Draw.text(xCenter, yCenter, text);
+
+	Draw.resetShadow();
+
+	Draw.setColor(C.black);
+	Draw.rect(x, y, w, h, true);
+
+
+};
+
+const BOX = {
+	W: 105,
+	H: 70
+};
+
+const drawStuff = () => {
+	Draw.clear();
+
+	// Draw.image('ref', Stage.mid.w, Stage.mid.h, 1.6, 1.7);
+
+
+	Draw.setHVAlign('center', 'middle');
+	// Draw.ctx.lineWidth = 2;
+	Draw.setFont(Font.mb);
+
+	const color1 = C.darkOrange;
+	const color2 = C.royalBlue;
+	const color3 = C.rebeccaPurple;
+	const color4 = C.green;
+
+
+	let x = 146;
+	let y = 164;
+
+	// --- PHASE 1 ---
+
+	drawTextBox(x, y, 'OWNER', color1);
+
+	drawTextBox(x, y + 186, 'STRATEGIC\nPLAN', color1);
+
+	drawTextBox(x, y + 379, 'INVESTOR', color1);
+
+	drawTextBox(x + 212, y + 186, 'FEASIBILITY\nSTUDY', color1);
+
+	drawTextBox(x + 424, y + 186, 'MASTER\nPLAN', color1);
+
+	drawTextBox(x + 290, y, 'ENVIRONMENT', color1);
+
+	drawTextBox(x + 290, y + 379, 'LEGAL', color1);
+
+	drawTextBox(x + 537, y + 471, 'STANDARD\nEQUIPMENT', color1);
+
+
+
+
+	// --- PHASE 3 ---
+	drawTextBox(x + 637, y + 186, 'DETAIL\nDESIGN', color2);
+	drawTextBox(x + 856, y + 186, 'CONSTRUCTION', color2);
+	drawTextBox(x + 745, y + 379, 'MEDICAL\nEQUIPMENT', color2);
+	drawTextBox(x + 976, y + 379, 'PROCUREMENT\nOF EQUIPMENT', color2);
+
+
+
+
+	// --- PHASE 3 ---
+
+	// PART 1
+
+	drawTextBox(x + 718, y, 'BUSINESS\nPLAN', color3);
+	drawTextBox(x + 955, y, 'HUMAN\nRESOURCES', color3);
+	drawTextBox(x + 1207, y, 'OPERATIONAL\nCOST', color3);
+
+	// PART 2
+
+	drawTextBox(x + 1100, y + 186, 'OPERATIONAL\nMANAGEMENT\nSYSTEM', color4);
+	drawTextBox(x + 1300, y + 186, 'START UP', color4);
+	drawTextBox(x + 1207, y + 379, 'LEGAL', color4);
+	drawTextBox(x + 1300, y + 580, 'FULL\nOPERATIONAL', color4);
+	drawTextBox(x + 1040, y + 580, 'SUSTAINABLE\nOPERATION', color4);
+
+
+
+
+
+
+
+};
+
+
+const Stage = {
+	w: 0,
+	h: 0,
+	mid: {
+		w: 0,
+		h: 0
+	},
+	canvas: null,
+	init() {
+		this.canvas = document.getElementById('gameCanvas');
+		const b = this.canvas.getBoundingClientRect();
+		this.w = b.width;
+		this.h = b.height;
+		this.mid.w = this.w / 2;
+		this.mid.h = this.h / 2;
+		const scale = 4;
+		this.canvas.width = this.w * scale;
+		this.canvas.height = this.h * scale;
+		Draw.init(this.canvas.getContext('2d'));
+		Draw.ctx.scale(scale, scale);
+	}
+};
+
+Stage.init();
+
+
+
+const run = () => {
+	drawStuff();
+	window.requestAnimationFrame(run);
+};
+
+window.onload = () => {
+	run();
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+</body>
+</html>
